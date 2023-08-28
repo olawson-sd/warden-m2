@@ -61,6 +61,7 @@ stages:
         secureFile: 'credentials'
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
       inputs:
-        PathtoPublish: '$(DOWNLOADSECUREFILE.SECUREFILEPATH)'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
