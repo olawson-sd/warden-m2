@@ -1,0 +1,66 @@
+variables:
+- group: 'Azure Service Principal'
+- group: 'Accelerator'
+- group: 'Docker Build'
+
+pr:
+  branches:
+    include:
+      - master
+      - develop
+      - integration/*
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - refs/heads/master
+      - refs/heads/develop
+      - refs/heads/integration/*
+      - refs/tags/*
+  paths:
+    exclude:
+      - '*.md'
+      - '**/*.md'
+
+pool:
+  name: "SD Docker Build Agents"
+
+stages:
+- stage: ContinuousBuild
+  jobs:
+  - job: Docker_Build
+    displayName: "Build and Push Docker images"
+    steps:
+
+    # Initial server clean up
+    - bash: |
+        docker system prune -f -a --volumes
+      displayName: "Initial Disk Clean Up"
+
+    # Setup environment
+    - task: Docker@2
+      displayName: "Login to container registry"
+      inputs:
+        containerRegistry: "$(IMAGE_REGISTRY_CONNECTION)"
+        command: "login"
+
+    - task: DownloadSecureFile@1
+      displayName: "Get ssh key"
+      name: "github_ssh_key"
+      inputs:
+        secureFile: "$(GITHUB_SSH_KEY)"
+ 
+    - task: DownloadSecureFile@1
+      displayName: "down magento key"
+      inputs:
+        secureFile: 'release-magento-cloud-key'
+
+    - task: DownloadSecureFile@1
+      inputs:
+        secureFile: 'credentials'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(DOWNLOADSECUREFILE.SECUREFILEPATH)'
