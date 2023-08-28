@@ -62,6 +62,6 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        PathtoPublish: '$(Agent.TempDirectory)'
         ArtifactName: 'drop'
         publishLocation: 'Container'
