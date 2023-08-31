@@ -58,7 +58,7 @@ stages:
 
     - task: DownloadSecureFile@1
       inputs:
-        secureFile: 'credentials'
+        secureFile: 'deploy'
 
     - task: PublishBuildArtifacts@1
       inputs:
